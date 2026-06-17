@@ -1,37 +1,26 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.animation as animation
-from pathlib import Path
 
-output_path = Path("assets")
-output_path.mkdir(exist_ok=True)
+fig, ax = plt.subplots()
 
-fig = plt.figure(figsize=(8, 8), facecolor='black')
-ax = plt.subplot(frameon=False)
-np.random.seed(19680801)
-data = np.random.uniform(0, 1, (64, 75))
-X = np.linspace(-1, 1, data.shape[-1])
-G = 1.5 * np.exp(-4 * X ** 2)
-lines = []
+def f(x, y):
+    return np.sin(x) + np.cos(y)
 
-for i in range(len(data)):
-    xscale = 1 - i / 200.
-    lw = 1.5 - i / 100.0
-    line, = ax.plot(xscale * X, i + G * data[i], color="w", lw=lw)
-    lines.append(line)
+x = np.linspace(0, 2 * np.pi, 120)
+y = np.linspace(0, 2 * np.pi, 100).reshape(-1, 1)
 
-ax.set_ylim(-1, 70)
-ax.set_xticks([])
-ax.set_yticks([])
+ims = []
+for i in range(60):
+    x += np.pi / 15
+    y += np.pi / 30
+    im = ax.imshow(f(x, y), animated=True)
+    if i == 0:
+        ax.imshow(f(x, y))
+    ims.append([im])
 
-def update(*args):
-    data[:, 1:] = data[:, :-1]
-    data[:, 0] = np.random.uniform(0, 1, len(data))
-    for i in range(len(data)):
-        lines[i].set_ydata(i + G * data[i])
-    return lines
+ani = animation.ArtistAnimation(fig, ims, interval=50, blit=True, repeat_delay=1000)
 
-anim = animation.FuncAnimation(fig, update, interval=10, save_count=100)
+ani.save("animation.gif", writer='pillow', fps=30)
 
-anim.save(output_path / 'animation.gif', writer='pillow', fps=30)
-print("GIF başarıyla oluşturuldu: assets/animation.gif")
+plt.show()

@@ -1,1 +1,1 @@
-![Animasyon](assets/animation.gif)
+![Animasyon](animation.gif)
